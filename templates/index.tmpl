@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Anki adder</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous" />
+    </head>
+    <body>
+        <p></p>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <form action="/translate" method="get">
+                        <div class="mb-3">
+                            <label for="world" class="form-label">English World:</label>
+                            <input type="text" name="world" class="form-control" id="world" />
+                            {{ range $f := .messages }}
+                            <div class="form-text text-danger">{{ $f }}</div>
+                            {{ end }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <p></p>
+        {{ if .world.World }}
+        <div class="container">
+            <div class="row">
+                <div class="col-8">
+                    <div class="card">
+                        <div class="card-header d-flex">Translate</div>
+                        <div class="card-body">
+                            <table class="table">
+                                <tr>
+                                    <th>World:</th>
+                                    <td>{{ .world.World }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Links:</th>
+                                    <td>
+										<a target="_blank" href="{{.ldoceonline}}">ldoceonline</a> 
+										&nbsp;
+										<a target="_blank" href="https://fastdic.com/word/{{.world.World}}">fastdic</a> 
+									</td>
+                                </tr>
+                                <tr>
+                                    <th>Audio</th>
+                                    <td>
+                                        <audio controls>
+                                            <source src="{{.world.Audio}}" type="audio/ogg" />
+                                            Your browser does not support the audio element.
+                                        </audio>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Symantec:</th>
+                                    <td>/{{ .world.Symantec }}/</td>
+                                </tr>
+                                <tr>
+                                    <th>Type:</th>
+                                    <td>{{ .world.Type }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Definition English:</th>
+
+                                    <td>
+                                        {{ range $i := .world.DefinitionEnglish}}
+                                        <span>{{ $i }}</span
+                                        ><br />
+                                        {{ end }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Definition Persian:</th>
+                                    <td>
+                                        {{ range $i := .world.DefinitionPersian}}
+                                        <span>{{ $i }}</span
+                                        >,
+                                        {{ end }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Sentences:</th>
+                                    <td>
+                                        {{ range $s := .world.Sentences }}
+                                        <div>
+                                            <p>{{ $s.Text }}</p>
+                                            <p>{{ $s.Translate }}</p>
+                                        </div>
+                                        <hr />
+                                        {{ end }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex">
+							Save into Anki with FooSoft Server
+							<a href="/refresh-deck-list" class="ms-auto">refresh deck list</a>
+						</div>
+                        <div class="card-body">
+                            <form action="/save" method="post">
+								<input type="hidden" name="world" value="{{.world.World}}">
+                                <div class="mb-3">
+                                    <label for="deck" class="form-label">Deck</label>
+                                    <select class="form-select" name="deck" aria-label="Decks">
+										<option disabled selected>Open this select Deck</option>
+										{{ range $i := .decks}}
+											<option {{if eq $.defaultDeck  $i.Name }} selected {{end}} value="{{ $i.Name }}">{{ $i.Name }}</option>
+										{{ end }}
+									  </select>
+                                </div>
+								<div class="mb-3">
+                                    <label for="tags" class="form-label">Tags</label>
+                                    <input name="tags" class="form-control" type="text" id="tags" />
+									<div class="form-text">split with <code>,</code></div>
+                                </div>
+								<button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+                        </div>
+                    </div>
+
+					<div class="card">
+                        <div class="card-header d-flex">Last Worlds</div>
+                        <div class="card-body">
+                            {{ range $w := .worlds}}
+								<a href="/translate?world={{$w.World}}">{{$w.World}}</a>
+								<br>
+							{{ end }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{ end }}
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    </body>
+</html>
